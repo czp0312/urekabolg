@@ -1,63 +1,89 @@
-# Astro Starter Kit: Blog
+# Retypeset
 
-```sh
-npm create astro@latest -- --template blog
-```
+![Cover Image](assets/images/v1/retypeset-en-desktop.webp)
+![Cover Image](assets/images/v1/retypeset-en-mobile.webp)
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+[简体中文](assets/docs/README.zh.md)｜[繁体中文](assets/docs/README.zh-tw.md)｜[日本語](assets/docs/README.ja.md)｜[Español](assets/docs/README.es.md)｜[Français](assets/docs/README.fr.md)｜[Русский](assets/docs/README.ru.md)
 
-Features:
+Retypeset is a static blog theme based on the [Astro](https://astro.build/) framework. Inspired by [Typography](https://astro-theme-typography.vercel.app/), Retypeset establishes a new visual standard and reimagines the layout of all pages, creating a reading experience reminiscent of paper books, reviving the beauty of typography. Details in every sight, elegance in every space.
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+## Demo
 
-## 🚀 Project Structure
+- [Retypeset](https://retypeset.radishzz.cc/en/)
+- [Retipografía](https://retypeset.radishzz.cc/es/)
+- [Переверстка](https://retypeset.radishzz.cc/ru/)
+- [重新编排](https://retypeset.radishzz.cc/)
+- [重新編排](https://retypeset.radishzz.cc/zh-tw/)
+- [再組版](https://retypeset.radishzz.cc/ja/)
 
-Inside of your Astro project, you'll see the following folders and files:
+## Features
 
-```text
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
-```
+- Built with Astro and UnoCSS
+- Support for SEO, Sitemap, OpenGraph, RSS, MDX, LaTeX, Mermaid, and TOC
+- i18n support
+- Light / Dark mode
+- Elegant view transitions
+- Rich theme customization
+- Optimized typography
+- Responsive design
+- Comment system
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Performance
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+<br>
+<p align="center">
+  <a href="https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fretypeset.radishzz.cc%2Fen%2F&form_factor=desktop">
+    <img width="710" alt="Retypeset Lighthouse Score" src="assets/images/retypeset-lighthouse-score.svg">
+  <a>
+</p>
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+## Getting Started
 
-Any static assets, like images, can be placed in the `public/` directory.
+1. [Fork](https://github.com/radishzzz/astro-theme-retypeset/fork) this repository, or use this template to create a new repository.
+2. Run the following commands in your terminal:
 
-## 🧞 Commands
+   ```bash
+   # Clone the repository
+   git clone <repository-url>
 
-All commands are run from the root of the project, from a terminal:
+   # Navigate to the project directory
+   cd <repository-name>
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+   # Install pnpm globally (if not already installed)
+   npm install -g pnpm
 
-## 👀 Want to learn more?
+   # Install dependencies
+   pnpm install
 
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+   # Start the development server
+   pnpm dev
+   ```
 
-## Credit
+3. Refer to the [Theme Guide](https://retypeset.radishzz.cc/en/posts/theme-guide/) to customize your blog and create new posts.
+4. Refer to the [Astro Deployment Guides](https://docs.astro.build/en/guides/deploy/) to deploy your blog to Netlify, Vercel, or other platforms.
 
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+&emsp;[![Deploy to Netlify](assets/images/deploy-netlify.svg)](https://app.netlify.com/start) [![Deploy to Vercel](assets/images/deploy-vercel.svg)](https://vercel.com/new)
+
+## Updates
+
+Retypeset releases [new features](https://github.com/radishzzz/astro-theme-retypeset/issues/18) from time to time. Simply run `pnpm update-theme` to update the theme. If you encounter merge conflicts, please refer to [this video](https://youtu.be/lz5OuKzvadQ?si=sH_ALNgqxrYqNVQT) for manual resolution.
+
+## Credits
+
+- [Typography](https://github.com/moeyua/astro-theme-typography)
+- [Fuwari](https://github.com/saicaca/fuwari)
+- [Redefine](https://github.com/EvanNotFound/hexo-theme-redefine)
+- [AstroPaper](https://github.com/satnaing/astro-paper)
+- [heti](https://github.com/sivan/heti)
+- [EarlySummerSerif](https://github.com/GuiWonder/EarlySummerSerif)
+
+## Star History
+
+<p align="center">
+<a href="https://star-history.com/#radishzzz/astro-theme-retypeset&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=radishzzz/astro-theme-retypeset&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=radishzzz/astro-theme-retypeset&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=radishzzz/astro-theme-retypeset&type=Date" />
+  </picture>
+</p>
