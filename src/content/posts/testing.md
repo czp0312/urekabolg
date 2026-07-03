@@ -3,7 +3,7 @@ title: "testing"
 published: 2026-07-03
 updated: 2026-07-03
 description: "first article"
-tags: []
+tags: [archive]
 draft: false
 toc: true
 lang: zh
