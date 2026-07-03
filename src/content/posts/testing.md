@@ -1,10 +1,10 @@
 ---
-title: "{{title}}"
-published: {{date}}
-updated: {{date}}
+title: "testing"
+published: 2026-07-03
+updated: 2026-07-03
 description: "first article"
 tags: []
-draft: true
+draft: false
 toc: true
 lang: zh
 abbrlink: ""
