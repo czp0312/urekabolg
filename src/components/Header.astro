@@ -1,61 +1,99 @@
----
-import { themeConfig } from '@/config'
-import { ui } from '@/i18n/ui'
-import { getPageInfo } from '@/utils/page'
-
-const { currentLang, getLocalizedPath, isPost } = getPageInfo(Astro.url.pathname)
-const { title, subtitle, i18nTitle } = themeConfig.site
-
-const currentUI = ui[currentLang as keyof typeof ui] ?? {}
-const headerTitle = i18nTitle ? currentUI.title : title
-const headerSubtitle = i18nTitle ? currentUI.subtitle : subtitle
-
-const TitleTag = isPost ? 'h2' : 'h1'
-const SubtitleTag = isPost ? 'div' : 'h2'
----
-
-<header
-  class:list={[
-    'lg:(uno-desktop-column top-20) cjk:tracking-wide',
-    isPost
-    ? 'mb-10.8'
-    : 'mb-10.5',
-  ]}
->
-  <TitleTag
-    class:list={[
-      'font-bold font-title',
-      isPost
-        ? `mb-2.8 mt-3 text-5.375 c-secondary lg:(mb-1.8 mt-0 text-9 c-primary)`
-        : `mb-1.8 w-75% text-8 c-primary lg:(w-full text-9)`,
-    ]}
-  >
-    <!-- Fix text cropping issues during view transition on iOS by adding a div tag -->
-    <div
-      class="box-content inline-block pr-1"
-      transition:name={`site-title-${currentLang}`}
-      data-disable-theme-toggle-transition
-    >
-      <a
-        id="site-title-link"
-        href={getLocalizedPath('/')}
-      >
-          {headerTitle}
+<header class="fade-up fixed top-0 left-0 right-0 z-50 overflow-x-clip bg-[hsl(var(--background))]/80 backdrop-blur-sm">
+  <nav class="w-full min-w-0 max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
+    <a href="/" class="font-mono text-sm font-medium hover:opacity-70 transition-opacity">
+      <span data-lang="zh">Ureka</span>
+      <span data-lang="en" class="sm:hidden">Ureka</span>
+      <span data-lang="en" class="hidden sm:inline">Ureka Blog</span>
+    </a>
+    <div class="min-w-0 flex items-center gap-1.5 sm:gap-4 text-[0.6875rem] sm:text-sm text-[hsl(var(--muted-foreground))] font-mono">
+      <a href="/#about" class="hover:text-[hsl(var(--foreground))] transition-colors">
+        <span data-lang="zh">关于</span>
+        <span data-lang="en">About</span>
       </a>
+      <a href="/#projects" class="hover:text-[hsl(var(--foreground))] transition-colors">
+        <span data-lang="zh">项目</span>
+        <span data-lang="en">Projects</span>
+      </a>
+      <a href="/#posts" class="hover:text-[hsl(var(--foreground))] transition-colors">
+        <span data-lang="zh">写作</span>
+        <span data-lang="en">Writing</span>
+      </a>
+      <button
+        id="language-toggle"
+        type="button"
+        class="min-w-8 rounded-md border border-[hsl(var(--border))] px-1.5 py-1 text-[0.6875rem] leading-none hover:border-[hsl(var(--foreground))/30] hover:bg-[hsl(var(--muted))] hover:text-[hsl(var(--foreground))] transition-colors"
+        aria-label="切换到英文"
+        data-language-aria-zh="切换到英文"
+        data-language-aria-en="Switch to Chinese"
+      >
+        <span data-lang="zh">EN</span>
+        <span data-lang="en">中</span>
+      </button>
+      <button
+        id="theme-toggle"
+        type="button"
+        class="p-1 rounded-md hover:bg-[hsl(var(--muted))] transition-colors"
+        aria-label="切换深浅色主题"
+        data-language-aria-zh="切换深浅色主题"
+        data-language-aria-en="Toggle color theme"
+      >
+        <span class="block dark:hidden text-base">🌙</span>
+        <span class="hidden dark:block text-base">☀️</span>
+      </button>
     </div>
-  </TitleTag>
-
-  {headerSubtitle && (
-    <SubtitleTag
-      class:list={[
-        'text-3.5 c-secondary font-navbar lg:text-4',
-        isPost
-        ? `op-0 lg:op-100`
-        : 'w-75% lg:w-full',
-      ]}
-      aria-hidden={isPost}
-    >
-      {headerSubtitle}
-    </SubtitleTag>
-  )}
+  </nav>
 </header>
+
+<script>
+  type SiteLanguage = 'zh' | 'en'
+
+  const languageToggle = document.getElementById('language-toggle')
+
+  function applyLanguage(language: SiteLanguage) {
+    document.documentElement.dataset.lang = language
+    document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en'
+
+    document
+      .querySelectorAll<HTMLElement>('[data-language-aria-zh][data-language-aria-en]')
+      .forEach((element) => {
+        const label = language === 'zh'
+          ? element.dataset.languageAriaZh
+          : element.dataset.languageAriaEn
+        if (label)
+          element.setAttribute('aria-label', label)
+      })
+
+    document
+      .querySelectorAll<HTMLImageElement>('[data-language-alt-zh][data-language-alt-en]')
+      .forEach((image) => {
+        const alt = language === 'zh'
+          ? image.dataset.languageAltZh
+          : image.dataset.languageAltEn
+        if (alt)
+          image.alt = alt
+      })
+  }
+
+  applyLanguage(document.documentElement.dataset.lang === 'en' ? 'en' : 'zh')
+
+  languageToggle?.addEventListener('click', () => {
+    const language: SiteLanguage
+      = document.documentElement.dataset.lang === 'zh' ? 'en' : 'zh'
+    applyLanguage(language)
+
+    try {
+      localStorage.setItem('language', language)
+    }
+    catch {
+      // The switch still works for this page when storage is unavailable.
+    }
+  })
+
+  document.getElementById('theme-toggle')?.addEventListener('click', () => {
+    document.documentElement.classList.toggle('dark')
+    localStorage.setItem(
+      'theme',
+      document.documentElement.classList.contains('dark') ? 'dark' : 'light',
+    )
+  })
+</script>

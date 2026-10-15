@@ -1,0 +1,493 @@
+---
+import { getCollection } from 'astro:content'
+import Header from '../components/Header.astro'
+import Layout from '../layouts/Layout.astro'
+
+// ---------------------------------------------------------------------------
+// 首页的个人信息都在这里，替换成你自己的内容即可。
+// Everything personal on this page lives in this file; edit the blocks below.
+// ---------------------------------------------------------------------------
+const profile = {
+  nameZh: 'Ureka',
+  nameEn: 'Ureka',
+  taglineZh: '技术 · 学习 · 生活',
+  taglineEn: 'Tech · Learning · Life',
+  bioZh: '欢迎来到我的博客。这里记录我在技术、学习和生活里的一些想法与实践，大部分内容还在慢慢补充。',
+  bioEn: 'Welcome to my blog. I write about technology, learning, and everyday life; most of it is still a work in progress.',
+  links: [
+    // TODO: 换成你自己的邮箱 / replace with your own address.
+    { label: 'GitHub', href: 'https://github.com/czp0312', icon: 'github' },
+    { label: 'Email', href: 'mailto:hello@example.com', icon: 'email' },
+  ],
+}
+
+const aboutZh = [
+  '我是 Ureka，这个博客的主人。',
+  '这里主要记录我在编程和技术上的学习过程，也会写一些生活里的随想。写下来的东西未必成熟，但都是真实的思考。',
+  '如果某篇文章对你有帮助，或者你想聊聊，欢迎通过上面的方式联系我。',
+]
+const aboutEn = [
+  'I am Ureka, and this is my personal blog.',
+  'It is mostly a place to record what I learn about programming and technology, along with the occasional note about everyday life. Nothing here is meant to be polished, only honest.',
+  'If something was useful to you, or you just want to talk, feel free to reach out through the links above.',
+]
+
+const posts = (await getCollection('blog')).filter(post => import.meta.env.DEV || !post.data.draft)
+posts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+
+const writingCategories = [
+  {
+    id: 'technical',
+    labelZh: '技术',
+    labelEn: 'Technical',
+    emptyZh: '技术文章正在整理中。',
+    emptyEn: 'Technical posts are on the way.',
+    posts: posts.filter(post => post.data.category === 'technical'),
+  },
+  {
+    id: 'notes',
+    labelZh: '随手写',
+    labelEn: 'Notes',
+    emptyZh: '还没有随手写。',
+    emptyEn: 'No notes here yet.',
+    posts: posts.filter(post => post.data.category === 'notes'),
+  },
+] as const
+
+const projects = (await getCollection('projects')).filter(project => import.meta.env.DEV || !project.data.draft)
+projects.sort((a, b) => {
+  const orderA = a.data.order ?? Number.MAX_SAFE_INTEGER
+  const orderB = b.data.order ?? Number.MAX_SAFE_INTEGER
+
+  if (orderA !== orderB)
+    return orderA - orderB
+
+  return new Date(b.data.date ?? 0).getTime() - new Date(a.data.date ?? 0).getTime()
+})
+
+const projectBeams = [
+  ['#60a5fa', '#a78bfa'],
+  ['#f97316', '#facc15'],
+  ['#34d399', '#60a5fa'],
+  ['#f472b6', '#c084fc'],
+]
+---
+
+<Layout title="Ureka Blog" description="Ureka Blog — 记录技术、学习与生活的个人博客。">
+  <Header />
+
+  <!-- Hero -->
+  <section class="flex flex-col px-4 max-w-3xl mx-auto pt-24 md:pt-28 pb-8 overflow-x-clip">
+    <div class="fade-up flex items-center gap-3 mb-4">
+      <img
+        src="/avatar.svg"
+        alt="Ureka"
+        class="w-14 h-14 rounded-full object-cover ring-1 ring-[hsl(var(--border))]"
+        width="56"
+        height="56"
+      />
+      <div>
+        <h1 class="text-lg font-medium tracking-tight">
+          <span data-lang="zh">{profile.nameZh}</span>
+          <span data-lang="en">{profile.nameEn}</span>
+        </h1>
+        <p class="text-xs text-[hsl(var(--muted-foreground))] font-mono mt-0.5">
+          <span data-lang="zh">{profile.taglineZh}</span>
+          <span data-lang="en">{profile.taglineEn}</span>
+        </p>
+      </div>
+    </div>
+    <div class="hero-lower-grid">
+      <div class="hero-profile-copy">
+        <p data-lang="zh" class="fade-up fade-delay-1 text-[hsl(var(--muted-foreground))] leading-relaxed text-sm mt-3">
+          {profile.bioZh}
+        </p>
+        <p data-lang="en" class="fade-up fade-delay-1 text-[hsl(var(--muted-foreground))] leading-relaxed text-sm mt-3">
+          {profile.bioEn}
+        </p>
+        <div class="fade-up fade-delay-2 mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-mono text-[hsl(var(--muted-foreground))]">
+          {profile.links.map(link => (
+            <a
+              href={link.href}
+              class="inline-flex items-center gap-1.5 hover:text-[hsl(var(--foreground))] transition-colors"
+              target={link.href.startsWith('http') ? '_blank' : undefined}
+              rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+            >
+              {link.icon === 'github' && (
+                <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3.28-.36 6.72-1.61 6.72-7.25A5.65 5.65 0 0 0 19.22 3.3 5.27 5.27 0 0 0 19.13.3S17.95-.07 15 1.78a13.38 13.38 0 0 0-7 0C5.05-.07 3.87.3 3.87.3a5.27 5.27 0 0 0-.09 3A5.65 5.65 0 0 0 2.28 7.3c0 5.6 3.44 6.85 6.72 7.25A4.8 4.8 0 0 0 8 18v4" />
+                  <path d="M8 19c-3 .92-3-1.92-4-2" />
+                </svg>
+              )}
+              {link.icon === 'email' && (
+                <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect width="20" height="16" x="2" y="4" rx="2" />
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                </svg>
+              )}
+              {link.label}
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+    <div class="fade-up fade-delay-3 mt-8 text-center">
+      <span class="text-xs text-[hsl(var(--muted-foreground))/40] font-mono animate-pulse">↓ scroll</span>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="py-6 md:py-8 px-4 max-w-3xl mx-auto">
+    <div class="fade-up group mb-4">
+      <div class="flex items-center gap-2">
+        <div class="decorate-bar h-4"></div>
+        <h2 class="text-xs font-mono font-medium text-[hsl(var(--muted-foreground))] transition-colors duration-700 group-hover:text-[hsl(var(--foreground))]">
+          <span data-lang="zh">关于</span>
+          <span data-lang="en">About</span>
+        </h2>
+      </div>
+    </div>
+    <div data-lang="zh" class="fade-up fade-delay-1 space-y-4 text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
+      {aboutZh.map(paragraph => <p>{paragraph}</p>)}
+      <p class="italic text-xs pt-4 border-t border-[hsl(var(--border))]">
+        "保持好奇，持续记录。"
+      </p>
+    </div>
+    <div data-lang="en" class="fade-up fade-delay-1 space-y-4 text-sm leading-relaxed text-[hsl(var(--muted-foreground))]">
+      {aboutEn.map(paragraph => <p>{paragraph}</p>)}
+      <p class="italic text-xs pt-4 border-t border-[hsl(var(--border))]">
+        "Stay curious, keep writing."
+      </p>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects" class="py-6 md:py-8 px-4 max-w-3xl mx-auto">
+    <div class="fade-up group mb-3">
+      <div class="flex items-center gap-2">
+        <div class="decorate-bar h-4"></div>
+        <h2 class="text-xs font-mono font-medium text-[hsl(var(--muted-foreground))] transition-colors duration-700 group-hover:text-[hsl(var(--foreground))]">
+          <span data-lang="zh">项目</span>
+          <span data-lang="en">Projects</span>
+        </h2>
+      </div>
+    </div>
+    <div class="space-y-1">
+      {projects.length > 0
+        ? projects.map((project, i) => {
+            const [beamFrom, beamTo] = projectBeams[i % projectBeams.length]
+
+            return (
+              <a href={`/projects/${project.id}`} class={`fade-up fade-delay-${Math.min(i + 1, 4)} block -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] hover:-translate-y-0.5 transition-all duration-300 group border-beam`} style={`--beam-from: ${beamFrom}; --beam-to: ${beamTo};`}>
+                <div class="flex items-start justify-between gap-4 relative z-[1]">
+                  <div class="min-w-0">
+                    <h3 class="text-sm font-medium group-hover:underline underline-offset-4">
+                      <span data-lang="zh">{project.data.title}</span>
+                      <span data-lang="en">{project.data.titleEn ?? project.data.title}</span>
+                    </h3>
+                    <p class="mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300">
+                      <span data-lang="zh">{project.data.description}</span>
+                      <span data-lang="en">{project.data.descriptionEn ?? project.data.description}</span>
+                    </p>
+                    {project.data.tags && project.data.tags.length > 0 && (
+                      <div class="mt-2 flex flex-wrap gap-1">
+                        {project.data.tags.map((tag: string, tagIndex: number) => (
+                          <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">
+                            <span data-lang="zh">{tag}</span>
+                            <span data-lang="en">{project.data.tagsEn?.[tagIndex] ?? tag}</span>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </a>
+            )
+          })
+        : (
+            <p class="fade-up fade-delay-1 py-6 text-center text-xs font-mono text-[hsl(var(--muted-foreground))/54]">
+              <span data-lang="zh">项目正在整理中。</span>
+              <span data-lang="en">Projects are on the way.</span>
+            </p>
+          )}
+    </div>
+  </section>
+
+  <!-- Writing -->
+  <section id="posts" class="py-6 md:py-8 px-4 max-w-3xl mx-auto">
+    <div class="fade-up group mb-3 flex items-end justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <div class="decorate-bar h-4"></div>
+        <h2 class="text-xs font-mono font-medium text-[hsl(var(--muted-foreground))] transition-colors duration-700 group-hover:text-[hsl(var(--foreground))]">
+          <span data-lang="zh">写作</span>
+          <span data-lang="en">Writing</span>
+        </h2>
+      </div>
+      <div class="writing-tabs flex items-center gap-3 font-mono text-xs" role="tablist" aria-label="写作分类 / Writing categories">
+        {writingCategories.map(category => (
+          <button
+            id={`writing-tab-${category.id}`}
+            class:list={['writing-tab', { 'is-active': category.id === 'technical' }]}
+            type="button"
+            role="tab"
+            aria-selected={category.id === 'technical' ? 'true' : 'false'}
+            aria-controls={`writing-panel-${category.id}`}
+            tabindex={category.id === 'technical' ? '0' : '-1'}
+            data-writing-tab={category.id}
+          >
+            <span data-lang="zh">{category.labelZh}</span>
+            <span data-lang="en">{category.labelEn}</span>
+            <span class="writing-tab-count">{category.posts.length}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+    <div class="writing-window-shell fade-up fade-delay-1 relative">
+      {writingCategories.map(category => (
+        <div
+          id={`writing-panel-${category.id}`}
+          class="writing-window"
+          role="tabpanel"
+          aria-labelledby={`writing-tab-${category.id}`}
+          aria-label={`${category.labelZh} / ${category.labelEn}`}
+          tabindex={category.id === 'technical' ? '0' : '-1'}
+          data-writing-panel={category.id}
+          hidden={category.id !== 'technical'}
+        >
+          {category.posts.length > 0
+            ? category.posts.map((post, i) => {
+                const [beamFrom, beamTo] = projectBeams[i % projectBeams.length]
+
+                return (
+                  <a href={`/blog/${post.id}`} class="writing-entry block -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] hover:-translate-y-0.5 transition-all duration-300 group border-beam" style={`--beam-from: ${beamFrom}; --beam-to: ${beamTo};`}>
+                    <div class="flex h-full items-center justify-between gap-4 relative z-[1]">
+                      <div class="min-w-0">
+                        <h3 class="flex min-w-0 items-center gap-2 text-sm font-medium group-hover:underline underline-offset-4">
+                          <span class="truncate">
+                            <span data-lang="zh">{post.data.title}</span>
+                            <span data-lang="en">{post.data.titleEn ?? post.data.title}</span>
+                          </span>
+                          {post.data.draft && (
+                            <span class="rounded border border-[hsl(var(--border))] px-1.5 py-0.5 text-[0.625rem] font-mono font-normal text-[hsl(var(--muted-foreground))] no-underline">
+                              Draft
+                            </span>
+                          )}
+                        </h3>
+                        <p class="writing-description mt-1 text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300">
+                          <span data-lang="zh">{post.data.description}</span>
+                          <span data-lang="en">{post.data.descriptionEn ?? post.data.description}</span>
+                        </p>
+                      </div>
+                      <span class="text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300 font-mono shrink-0">{post.data.date}</span>
+                    </div>
+                  </a>
+                )
+              })
+            : (
+                <p class="writing-empty">
+                  <span data-lang="zh">{category.emptyZh}</span>
+                  <span data-lang="en">{category.emptyEn}</span>
+                </p>
+              )}
+        </div>
+      ))}
+      <div class="writing-scroll-cue" data-writing-scroll-cue hidden aria-hidden="true">
+        <span data-lang="zh">↓ 更早的文章</span>
+        <span data-lang="en">↓ Older writing</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="max-w-3xl mx-auto px-4 pb-8 text-xs text-[hsl(var(--muted-foreground))/50] font-mono">
+    <div class="border-t border-[hsl(var(--border))] pt-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+      <span>© 2026 Ureka Blog</span>
+      <span>
+        <span data-lang="zh">用 Astro 与 Tailwind CSS 构建</span>
+        <span data-lang="en">Built with Astro and Tailwind CSS</span>
+      </span>
+    </div>
+  </footer>
+</Layout>
+
+<style>
+  .hero-lower-grid {
+    margin-top: 0.15rem;
+  }
+
+  .hero-profile-copy {
+    min-width: 0;
+  }
+
+  .writing-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-height: 2rem;
+    padding-inline: 0.125rem;
+    border-bottom: 1px solid transparent;
+    color: hsl(var(--muted-foreground) / 0.58);
+    transition: border-color 180ms ease, color 180ms ease;
+  }
+
+  .writing-tab:hover {
+    color: hsl(var(--foreground));
+  }
+
+  .writing-tab.is-active {
+    border-color: hsl(var(--foreground) / 0.72);
+    color: hsl(var(--foreground));
+  }
+
+  .writing-tab:focus-visible,
+  .writing-window:focus-visible {
+    outline: 1px solid hsl(var(--foreground) / 0.55);
+    outline-offset: 3px;
+  }
+
+  .writing-tab-count {
+    color: hsl(var(--muted-foreground) / 0.46);
+    font-size: 0.625rem;
+  }
+
+  .writing-window {
+    height: 15rem;
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+    padding-block: 0.25rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: auto;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.24) transparent;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+  }
+
+  .writing-window::-webkit-scrollbar {
+    width: 0.3rem;
+  }
+
+  .writing-window::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: hsl(var(--muted-foreground) / 0.24);
+  }
+
+  .writing-entry {
+    height: calc((15rem - 0.5rem) / 3);
+  }
+
+  .writing-entry:focus-visible {
+    outline: 1px solid hsl(var(--foreground) / 0.55);
+    outline-offset: -2px;
+  }
+
+  .writing-description {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .writing-empty {
+    display: grid;
+    height: 100%;
+    place-items: center;
+    color: hsl(var(--muted-foreground) / 0.54);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  }
+
+  .writing-scroll-cue {
+    position: absolute;
+    right: 0.5rem;
+    bottom: 0.25rem;
+    z-index: 2;
+    padding: 1.75rem 0.25rem 0.1rem 1.5rem;
+    background: linear-gradient(to bottom, transparent, hsl(var(--background)) 58%);
+    color: hsl(var(--muted-foreground) / 0.56);
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  const writingTabs = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-writing-tab]'))
+  const writingPanels = Array.from(document.querySelectorAll<HTMLElement>('[data-writing-panel]'))
+  const writingScrollCue = document.querySelector<HTMLElement>('[data-writing-scroll-cue]')
+
+  function updateWritingScrollCue(panel: HTMLElement) {
+    if (!writingScrollCue)
+      return
+
+    const hasOlderWriting = panel.scrollHeight > panel.clientHeight + 1
+    const isAtBottom = panel.scrollTop + panel.clientHeight >= panel.scrollHeight - 2
+    writingScrollCue.hidden = !hasOlderWriting || isAtBottom
+  }
+
+  function activateWritingCategory(category: string, focusTab = false) {
+    const activeTab = writingTabs.find(tab => tab.dataset.writingTab === category)
+    const activePanel = writingPanels.find(panel => panel.dataset.writingPanel === category)
+
+    if (!activeTab || !activePanel)
+      return
+
+    writingTabs.forEach((tab) => {
+      const isActive = tab === activeTab
+      tab.classList.toggle('is-active', isActive)
+      tab.setAttribute('aria-selected', isActive ? 'true' : 'false')
+      tab.tabIndex = isActive ? 0 : -1
+    })
+
+    writingPanels.forEach((panel) => {
+      const isActive = panel === activePanel
+      panel.hidden = !isActive
+      panel.tabIndex = isActive ? 0 : -1
+    })
+
+    activePanel.scrollTop = 0
+    updateWritingScrollCue(activePanel)
+    if (focusTab)
+      activeTab.focus()
+  }
+
+  writingTabs.forEach((tab, index) => {
+    tab.addEventListener('click', () => {
+      if (tab.dataset.writingTab)
+        activateWritingCategory(tab.dataset.writingTab)
+    })
+
+    tab.addEventListener('keydown', (event) => {
+      let nextIndex = index
+
+      if (event.key === 'ArrowRight')
+        nextIndex = (index + 1) % writingTabs.length
+      else if (event.key === 'ArrowLeft')
+        nextIndex = (index - 1 + writingTabs.length) % writingTabs.length
+      else if (event.key === 'Home')
+        nextIndex = 0
+      else if (event.key === 'End')
+        nextIndex = writingTabs.length - 1
+      else return
+
+      event.preventDefault()
+      const nextCategory = writingTabs[nextIndex]?.dataset.writingTab
+      if (nextCategory)
+        activateWritingCategory(nextCategory, true)
+    })
+  })
+
+  writingPanels.forEach((panel) => {
+    panel.addEventListener('scroll', () => updateWritingScrollCue(panel), { passive: true })
+  })
+
+  const initialWritingPanel = writingPanels.find(panel => !panel.hidden)
+  if (initialWritingPanel)
+    updateWritingScrollCue(initialWritingPanel)
+
+  window.addEventListener('resize', () => {
+    const activePanel = writingPanels.find(panel => !panel.hidden)
+    if (activePanel)
+      updateWritingScrollCue(activePanel)
+  })
+</script>
