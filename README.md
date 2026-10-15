@@ -23,6 +23,8 @@ npm run build # 构建到 dist/
 npm run preview
 ```
 
+> 依赖锁文件 `package-lock.json` 使用 npm 10 生成，与 Cloudflare 构建环境（npm 10.9.2）保持一致。用 npm 11 执行 `npm install` 会重写锁文件，并让 CI 的 `npm ci` 报 `Missing: @emnapi/core ...`；此时请用 npm 10 重新生成：`npx npm@10 install --package-lock-only`。
+
 需要让开发服务器在后台运行时（例如 AI 助手），使用 Astro 的后台模式：
 
 ```bash
