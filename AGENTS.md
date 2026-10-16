@@ -32,11 +32,12 @@ Ureka Blog 是一个基于 Astro 的静态个人博客，视觉与信息架构�
 - `src/pages/tags/index.astro`：标签总览页（`/tags`），列出全部标签与文章数量。
 - `src/pages/tags/[tag].astro`：单标签文章列表页（`/tags/<tag>`），按标签筛选文章。
 - `src/pages/search.astro`：搜索页（`/search`），构建期把标题、摘要、标签和正文纯文本写入 `application/json` 索引，客户端按语言检索；正文用正则剥离 Markdown 语法。
-- `src/components/Footer.astro`：全站页脚，包含标签入口与版权信息。
+- `src/pages/archive.astro`：归档页（`/archive`），唯一列出「带 `archive` 标签的文章」的页面。
+- `src/components/Footer.astro`：全站页脚，包含标签 / 归档入口与版权信息。
 - `src/components/PostList.astro`：文章列表组件，用「拉伸链接 + `sr-only` 标题」保证整卡可点，同时让标签链接保持独立可点。
 - `src/components/TagPills.astro`：标签胶囊组件，`links` 为 `true` 时链到 `/tags/<tag>`。
-- `src/utils/posts.ts`：`getPublishedPosts()`，统一草稿过滤与按日期倒序排序。
-- `src/utils/tags.ts`：`tagSlug()` / `collectTags()` / `postsWithTag()`，标签 slug 与聚合逻辑。
+- `src/utils/posts.ts`：`getPublishedPosts()`（排除草稿与归档，按日期倒序）、`getArchivedPosts()`、`isArchivedPost()`。
+- `src/utils/tags.ts`：`tagSlug()` / `collectTags()` / `postsWithTag()`，以及归档控制标签的 `ARCHIVE_TAG` / `isArchiveTag()` / `hasArchiveTag()` / `visibleTags()`。
 - `src/layouts/Layout.astro`：全站页面壳，包含 `siteName`、`defaultDescription`、canonical、Open Graph、Twitter Card、favicon、网格背景 SVG，并引入 `site-init.js` 与 `fade-observer.js`。
 - `src/components/Header.astro`：固定顶部导航（`/search`、`/#about`、`/#projects`、`/#posts`）、语言切换和主题切换。语言/主题切换逻辑写在该文件的 `<script>` 中。
 - `src/styles/global.css`：Tailwind v4 入口、`@theme` 变量、`@keyframes`、`:root` / `.dark` 设计变量、`html[data-lang]` 显隐规则，以及 `.fade-up`、`.border-beam`、`.color-slide`、`.decorate-bar`、`.blog-content`、`.project-content`、`.prose` 等组件层样式。
@@ -122,8 +123,9 @@ Ureka Blog 是一个基于 Astro 的静态个人博客，视觉与信息架构�
 - 静态公共资源：`public/`，会按原路径发布；`public/scripts/` 是运行时脚本，不参与打包，ESLint 也忽略该目录。
 - 环境变量：`.env` 和 `.env.production` 被 `.gitignore` 忽略；当前没有自定义 env schema 或 `PUBLIC_*` 约定。新增环境变量前必须确认 Astro 暴露规则和部署平台配置。
 - 不要提交密钥、Token、Cookie、证书或真实用户隐私数据。
-- 站点有标签页（`/tags`、`/tags/<tag>`）和搜索页（`/search`），但没有 RSS/Atom、评论系统和访问量统计；这些能力在主题移植时被有意移除，需要时再单独引入。
+- 站点有标签页（`/tags`、`/tags/<tag>`）、搜索页（`/search`）和归档页（`/archive`），但没有 RSS/Atom、评论系统和访问量统计；这些能力在主题移植时被有意移除，需要时再单独引入。
 - 搜索是纯客户端的：索引在构建期由 `src/pages/search.astro` 内联进 HTML，没有第三方服务，也没有额外的构建步骤或依赖。
+- `archive` 是保留的控制标签：带它的文章不进首页写作列表、不进标签页、不进搜索，只在 `/archive` 列出，标签胶囊里也不会渲染它。
 
 ## 修改后的验证流程
 

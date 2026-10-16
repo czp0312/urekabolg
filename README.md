@@ -10,7 +10,7 @@
 - Tailwind CSS v4（`@tailwindcss/vite` + `@tailwindcss/typography`）
 - Astro Content Collections（`blog` / `projects`）
 - 客户端双语切换（中文 / 英文），单 URL，不生成多语言路由
-- 标签页 `/tags` 与标签筛选页 `/tags/<tag>`，搜索页 `/search`（构建期生成索引，客户端全文检索）
+- 标签页 `/tags` 与标签筛选页 `/tags/<tag>`，搜索页 `/search`（构建期生成索引，客户端全文检索），归档页 `/archive`
 - 部署目标：Cloudflare Workers Assets（见 `wrangler.jsonc`）
 
 ## 快速开始
@@ -63,6 +63,7 @@ src/
   pages/tags/index.astro       标签总览
   pages/tags/[tag].astro       单标签文章列表
   pages/search.astro           全文搜索
+  pages/archive.astro          归档文章（tags 里带 archive 的文章）
   utils/posts.ts               文章读取与排序
   utils/tags.ts                标签收集与 slug 生成
   styles/global.css            Tailwind v4 入口、设计变量与组件样式

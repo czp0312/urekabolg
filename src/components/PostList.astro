@@ -1,6 +1,6 @@
 ---
 import type { BlogPost } from '../utils/posts'
-import { tagSlug } from '../utils/tags'
+import { tagSlug, visibleTags } from '../utils/tags'
 
 interface Props {
   posts: BlogPost[]
@@ -12,8 +12,11 @@ const { posts, showTags = true } = Astro.props
 ---
 
 <ul class="space-y-1 list-none p-0">
-  {posts.map(post => (
-    <li>
+  {posts.map((post) => {
+    const tags = visibleTags(post.data.tags).tags
+
+    return (
+      <li>
       <div class="relative -mx-4 px-4 py-3 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] transition-colors group">
         {/* Stretched link keeps the whole card clickable without nesting the tag links. */}
         <a
@@ -38,9 +41,9 @@ const { posts, showTags = true } = Astro.props
           </div>
           <span class="shrink-0 font-mono text-xs text-[hsl(var(--muted-foreground))]">{post.data.date}</span>
         </div>
-        {showTags && post.data.tags && post.data.tags.length > 0 && (
+        {showTags && tags.length > 0 && (
           <div class="relative z-10 mt-2 flex w-fit flex-wrap gap-1.5">
-            {post.data.tags.map(tag => (
+            {tags.map(tag => (
               <a
                 href={`/tags/${tagSlug(tag)}`}
                 class="inline-flex items-center rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--muted))/45] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] transition-colors hover:border-[hsl(var(--foreground))/30] hover:text-[hsl(var(--foreground))]"
@@ -51,6 +54,7 @@ const { posts, showTags = true } = Astro.props
           </div>
         )}
       </div>
-    </li>
-  ))}
+      </li>
+    )
+  })}
 </ul>

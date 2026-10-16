@@ -4,6 +4,7 @@ import Footer from '../../components/Footer.astro'
 import Header from '../../components/Header.astro'
 import TagPills from '../../components/TagPills.astro'
 import Layout from '../../layouts/Layout.astro'
+import { isArchivedPost } from '../../utils/posts'
 
 export async function getStaticPaths() {
   const posts = (await getCollection('blog')).filter(p => import.meta.env.DEV || !p.data.draft)
@@ -19,14 +20,15 @@ if (!post)
 
 const { Content, headings } = await render(post)
 const sections = headings
+const archived = isArchivedPost(post)
 ---
 
 <Layout title={`${post.data.title} — Ureka Blog`} description={post.data.description} type="article" publishedTime={post.data.date}>
   <Header />
   <main class="max-w-3xl mx-auto px-4 pt-20 pb-16">
-    <a href="/#posts" class="inline-flex items-center text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors mb-8">
-      <span data-lang="zh">← 返回写作</span>
-      <span data-lang="en">← Back to writing</span>
+    <a href={archived ? '/archive' : '/#posts'} class="inline-flex items-center text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors mb-8">
+      <span data-lang="zh">{archived ? '← 返回归档' : '← 返回写作'}</span>
+      <span data-lang="en">{archived ? '← Back to archive' : '← Back to writing'}</span>
     </a>
     <h1 class="text-lg font-medium mb-2">
       <span data-lang="zh">{post.data.title}</span>

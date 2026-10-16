@@ -3,6 +3,8 @@ import { getCollection } from 'astro:content'
 import Footer from '../components/Footer.astro'
 import Header from '../components/Header.astro'
 import Layout from '../layouts/Layout.astro'
+import { getPublishedPosts } from '../utils/posts'
+import { visibleTags } from '../utils/tags'
 
 // ---------------------------------------------------------------------------
 // 首页的个人信息都在这里，替换成你自己的内容即可。
@@ -32,8 +34,8 @@ const aboutEn = [
   'If something was useful to you, or you just want to talk, feel free to reach out through the links above.',
 ]
 
-const posts = (await getCollection('blog')).filter(post => import.meta.env.DEV || !post.data.draft)
-posts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+// Archived posts (tag `archive`) never show up here; they live on /archive only.
+const posts = await getPublishedPosts()
 
 const writingCategories = [
   {
@@ -176,6 +178,7 @@ const projectBeams = [
       {projects.length > 0
         ? projects.map((project, i) => {
             const [beamFrom, beamTo] = projectBeams[i % projectBeams.length]
+            const tags = visibleTags(project.data.tags, project.data.tagsEn)
 
             return (
               <a href={`/projects/${project.id}`} class={`fade-up fade-delay-${Math.min(i + 1, 4)} block -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] hover:-translate-y-0.5 transition-all duration-300 group border-beam`} style={`--beam-from: ${beamFrom}; --beam-to: ${beamTo};`}>
@@ -189,12 +192,12 @@ const projectBeams = [
                       <span data-lang="zh">{project.data.description}</span>
                       <span data-lang="en">{project.data.descriptionEn ?? project.data.description}</span>
                     </p>
-                    {project.data.tags && project.data.tags.length > 0 && (
+                    {tags.tags.length > 0 && (
                       <div class="mt-2 flex flex-wrap gap-1">
-                        {project.data.tags.map((tag: string, tagIndex: number) => (
+                        {tags.tags.map((tag: string, tagIndex: number) => (
                           <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">
                             <span data-lang="zh">{tag}</span>
-                            <span data-lang="en">{project.data.tagsEn?.[tagIndex] ?? tag}</span>
+                            <span data-lang="en">{tags.tagsEn?.[tagIndex] ?? tag}</span>
                           </span>
                         ))}
                       </div>
@@ -257,6 +260,7 @@ const projectBeams = [
           {category.posts.length > 0
             ? category.posts.map((post, i) => {
                 const [beamFrom, beamTo] = projectBeams[i % projectBeams.length]
+                const tags = visibleTags(post.data.tags, post.data.tagsEn)
 
                 return (
                   <a href={`/blog/${post.id}`} class="writing-entry flex items-center -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] hover:-translate-y-0.5 transition-all duration-300 group border-beam" style={`--beam-from: ${beamFrom}; --beam-to: ${beamTo};`}>
@@ -277,12 +281,12 @@ const projectBeams = [
                           <span data-lang="zh">{post.data.description}</span>
                           <span data-lang="en">{post.data.descriptionEn ?? post.data.description}</span>
                         </p>
-                        {post.data.tags && post.data.tags.length > 0 && (
+                        {tags.tags.length > 0 && (
                           <div class="mt-2 flex flex-wrap gap-1">
-                            {post.data.tags.map((tag: string, tagIndex: number) => (
+                            {tags.tags.map((tag: string, tagIndex: number) => (
                               <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">
                                 <span data-lang="zh">{tag}</span>
-                                <span data-lang="en">{post.data.tagsEn?.[tagIndex] ?? tag}</span>
+                                <span data-lang="en">{tags.tagsEn?.[tagIndex] ?? tag}</span>
                               </span>
                             ))}
                           </div>

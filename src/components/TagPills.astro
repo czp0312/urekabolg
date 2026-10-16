@@ -1,5 +1,5 @@
 ---
-import { tagSlug } from '../utils/tags'
+import { tagSlug, visibleTags } from '../utils/tags'
 
 interface Props {
   tags: string[]
@@ -11,16 +11,17 @@ interface Props {
 }
 
 const { tags, tagsEn, links = true, class: className = '' } = Astro.props
+const visible = visibleTags(tags, tagsEn)
 ---
 
-{tags.length > 0 && (
+{visible.tags.length > 0 && (
   <div class:list={['flex flex-wrap gap-1.5', className]}>
-    {tags.map((tag, index) => {
+    {visible.tags.map((tag, index) => {
       const classes = 'inline-flex items-center rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--muted))/45] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] transition-colors'
       const label = (
         <>
           <span data-lang="zh">{tag}</span>
-          <span data-lang="en">{tagsEn?.[index] ?? tag}</span>
+          <span data-lang="en">{visible.tagsEn?.[index] ?? tag}</span>
         </>
       )
 

@@ -1,0 +1,40 @@
+---
+import Footer from '../components/Footer.astro'
+import Header from '../components/Header.astro'
+import PostList from '../components/PostList.astro'
+import Layout from '../layouts/Layout.astro'
+import { getArchivedPosts } from '../utils/posts'
+
+// Posts tagged `archive` are hidden from the homepage, tag pages and search.
+// This page is the only place that lists them.
+const posts = await getArchivedPosts()
+---
+
+<Layout title="归档 — Ureka Blog" description="Ureka Blog 的归档文章：不会出现在写作列表和标签页中，只从这里查看。">
+  <Header />
+  <main class="max-w-3xl mx-auto px-4 pt-20 pb-12">
+    <a href="/" class="inline-flex items-center text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors mb-8">
+      <span data-lang="zh">← 返回首页</span>
+      <span data-lang="en">← Back home</span>
+    </a>
+
+    <h1 class="text-lg font-medium mb-2">
+      <span data-lang="zh">归档</span>
+      <span data-lang="en">Archive</span>
+    </h1>
+    <p class="mb-8 font-mono text-xs text-[hsl(var(--muted-foreground))]">
+      <span data-lang="zh">共 {posts.length} 篇归档文章，不进入首页写作列表。</span>
+      <span data-lang="en">{posts.length} archived posts, kept out of the homepage writing list.</span>
+    </p>
+
+    {posts.length > 0
+      ? <PostList posts={posts} />
+      : (
+          <p class="font-mono text-xs text-[hsl(var(--muted-foreground))]">
+            <span data-lang="zh">还没有归档文章。给文章的 frontmatter 加上 tags: [archive] 就会出现在这里。</span>
+            <span data-lang="en">Nothing archived yet. Add tags: [archive] to a post's frontmatter to list it here.</span>
+          </p>
+        )}
+  </main>
+  <Footer />
+</Layout>

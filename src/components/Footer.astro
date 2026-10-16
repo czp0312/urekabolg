@@ -6,6 +6,12 @@ const links = [
     labelEn: 'Tags',
     icon: 'tag',
   },
+  {
+    href: '/archive',
+    labelZh: '归档',
+    labelEn: 'Archive',
+    icon: 'archive',
+  },
 ]
 ---
 
@@ -20,6 +26,13 @@ const links = [
           <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" />
             <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
+          </svg>
+        )}
+        {link.icon === 'archive' && (
+          <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect width="20" height="5" x="2" y="3" rx="1" />
+            <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" />
+            <path d="M10 12h4" />
           </svg>
         )}
         <span data-lang="zh">{link.labelZh}</span>
