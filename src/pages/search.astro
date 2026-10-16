@@ -1,0 +1,256 @@
+---
+import Footer from '../components/Footer.astro'
+import Header from '../components/Header.astro'
+import Layout from '../layouts/Layout.astro'
+import { getPublishedPosts } from '../utils/posts'
+import { tagSlug } from '../utils/tags'
+
+/** Strip Markdown syntax so the index holds readable text only. */
+function toPlainText(markdown: string): string {
+  return markdown
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/`[^`]*`/g, ' ')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/^\s{0,3}#{1,6}\s+/gm, '')
+    .replace(/^\s{0,3}>\s?/gm, '')
+    .replace(/[*_~]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+const posts = await getPublishedPosts()
+
+const searchIndex = posts.map(post => ({
+  id: post.id,
+  title: post.data.title,
+  titleEn: post.data.titleEn ?? post.data.title,
+  description: post.data.description,
+  descriptionEn: post.data.descriptionEn ?? post.data.description,
+  date: post.data.date,
+  category: post.data.category,
+  tags: (post.data.tags ?? []).map((tag, index) => ({
+    label: tag,
+    labelEn: post.data.tagsEn?.[index] ?? tag,
+    slug: tagSlug(tag),
+  })),
+  text: toPlainText(post.body ?? '').slice(0, 4000),
+}))
+---
+
+<Layout title="搜索 — Ureka Blog" description="在 Ureka Blog 的全部文章中搜索标题、摘要与正文。">
+  <Header />
+  <main class="max-w-3xl mx-auto px-4 pt-20 pb-12">
+    <a href="/#posts" class="inline-flex items-center text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors mb-8">
+      <span data-lang="zh">← 返回写作</span>
+      <span data-lang="en">← Back to writing</span>
+    </a>
+
+    <h1 class="text-lg font-medium mb-2">
+      <span data-lang="zh">搜索</span>
+      <span data-lang="en">Search</span>
+    </h1>
+    <p class="mb-6 font-mono text-xs text-[hsl(var(--muted-foreground))]">
+      <span data-lang="zh">共 {posts.length} 篇文章，支持标题、摘要和正文全文检索。</span>
+      <span data-lang="en">Searching {posts.length} posts across titles, summaries, and full text.</span>
+    </p>
+
+    <div class="relative mb-6">
+      <svg class="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[hsl(var(--muted-foreground))]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="8" />
+        <path d="m21 21-4.3-4.3" />
+      </svg>
+      <input
+        id="search-input"
+        type="search"
+        autocomplete="off"
+        placeholder="搜索文章…"
+        data-placeholder-zh="搜索文章…"
+        data-placeholder-en="Search posts…"
+        aria-label="搜索文章"
+        data-language-aria-zh="搜索文章"
+        data-language-aria-en="Search posts"
+        class="w-full rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--muted))/45] py-2 pl-9 pr-3 font-mono text-sm text-[hsl(var(--foreground))] outline-none transition-colors placeholder:text-[hsl(var(--muted-foreground))/70] focus:border-[hsl(var(--foreground))/30]"
+      />
+    </div>
+
+    <p id="search-status" class="mb-3 font-mono text-xs text-[hsl(var(--muted-foreground))]" hidden></p>
+    <div id="search-results"></div>
+
+    <p id="search-empty" class="font-mono text-xs text-[hsl(var(--muted-foreground))]" hidden>
+      <span data-lang="zh">没有匹配的文章。</span>
+      <span data-lang="en">No posts matched your search.</span>
+    </p>
+
+    <ul id="search-all" class="space-y-1 list-none p-0">
+      {posts.map(post => (
+        <li class="search-entry" data-id={post.id}>
+          <a
+            href={`/blog/${post.id}`}
+            class="block -mx-4 px-4 py-3 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] transition-colors group"
+          >
+            <div class="flex items-start justify-between gap-4">
+              <div class="min-w-0">
+                <h3 class="text-sm font-medium group-hover:underline underline-offset-4">
+                  <span data-lang="zh">{post.data.title}</span>
+                  <span data-lang="en">{post.data.titleEn ?? post.data.title}</span>
+                </h3>
+                <p class="mt-1 text-xs leading-relaxed text-[hsl(var(--muted-foreground))]">
+                  <span data-lang="zh">{post.data.description}</span>
+                  <span data-lang="en">{post.data.descriptionEn ?? post.data.description}</span>
+                </p>
+              </div>
+              <span class="shrink-0 font-mono text-xs text-[hsl(var(--muted-foreground))]">{post.data.date}</span>
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </main>
+  <Footer />
+
+  {/* Escape `<` so post text containing `</script>` cannot break out of the tag. */}
+  <script is:inline type="application/json" id="search-index" set:html={JSON.stringify(searchIndex).replace(/</g, '\\u003c')} />
+</Layout>
+
+<script>
+  interface SearchEntry {
+    id: string
+    title: string
+    titleEn: string
+    description: string
+    descriptionEn: string
+    date: string
+    category: string
+    tags: { label: string, labelEn: string, slug: string }[]
+    text: string
+  }
+
+  const input = document.getElementById('search-input') as HTMLInputElement | null
+  const results = document.getElementById('search-results')
+  const status = document.getElementById('search-status')
+  const empty = document.getElementById('search-empty')
+  const allList = document.getElementById('search-all')
+  const rawIndex = document.getElementById('search-index')?.textContent
+
+  const index: SearchEntry[] = rawIndex ? JSON.parse(rawIndex) : []
+
+  function currentLanguage(): 'zh' | 'en' {
+    return document.documentElement.dataset.lang === 'en' ? 'en' : 'zh'
+  }
+
+  function escapeHtml(value: string): string {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+  }
+
+  /** Substring match with a small score boost for title hits. */
+  function score(entry: SearchEntry, needle: string): number {
+    const title = `${entry.title} ${entry.titleEn}`.toLowerCase()
+    const tags = entry.tags.map(tag => `${tag.label} ${tag.labelEn}`).join(' ').toLowerCase()
+    const body = `${entry.description} ${entry.descriptionEn} ${entry.text}`.toLowerCase()
+
+    let value = 0
+    if (title.includes(needle))
+      value += 6
+    if (tags.includes(needle))
+      value += 3
+    if (body.includes(needle))
+      value += 1
+    return value
+  }
+
+  function renderCard(entry: SearchEntry): string {
+    const language = currentLanguage()
+    const title = escapeHtml(language === 'en' ? entry.titleEn : entry.title)
+    const description = escapeHtml(language === 'en' ? entry.descriptionEn : entry.description)
+    const tagHtml = entry.tags
+      .map((tag) => {
+        const label = escapeHtml(language === 'en' ? tag.labelEn : tag.label)
+        return `<a href="/tags/${tag.slug}" class="inline-flex items-center rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--muted))/45] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] transition-colors hover:text-[hsl(var(--foreground))]">${label}</a>`
+      })
+      .join('')
+
+    return `
+      <div>
+        <div class="relative -mx-4 px-4 py-3 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] transition-colors group">
+          <a href="/blog/${entry.id}" class="absolute inset-0 rounded-lg" aria-label="${title}"></a>
+          <div class="flex items-start justify-between gap-4">
+            <div class="min-w-0">
+              <h3 class="text-sm font-medium group-hover:underline underline-offset-4">${title}</h3>
+              <p class="mt-1 text-xs leading-relaxed text-[hsl(var(--muted-foreground))]">${description}</p>
+              ${tagHtml ? `<div class="relative z-10 mt-2 flex w-fit flex-wrap gap-1.5">${tagHtml}</div>` : ''}
+            </div>
+            <span class="shrink-0 font-mono text-xs text-[hsl(var(--muted-foreground))]">${entry.date}</span>
+          </div>
+        </div>
+      </div>`
+  }
+
+  function runSearch() {
+    const query = input?.value.trim().toLowerCase() ?? ''
+
+    if (!results || !status || !empty)
+      return
+
+    if (!query) {
+      results.innerHTML = ''
+      results.hidden = true
+      status.hidden = true
+      empty.hidden = true
+      if (allList)
+        allList.hidden = false
+      return
+    }
+
+    const matches = index
+      .map(entry => ({ entry, value: score(entry, query) }))
+      .filter(match => match.value > 0)
+      .sort((a, b) => b.value - a.value || b.entry.date.localeCompare(a.entry.date))
+      .map(match => match.entry)
+
+    if (allList)
+      allList.hidden = true
+    results.innerHTML = matches.map(renderCard).join('')
+    results.hidden = false
+    empty.hidden = matches.length > 0
+
+    const language = currentLanguage()
+    status.hidden = false
+    status.textContent = language === 'en'
+      ? `${matches.length} result${matches.length === 1 ? '' : 's'}`
+      : `${matches.length} 条结果`
+  }
+
+  input?.addEventListener('input', runSearch)
+  input?.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      input.value = ''
+      runSearch()
+    }
+  })
+
+  // Keep placeholders and results in sync when the language toggles.
+  new MutationObserver(() => {
+    if (input) {
+      input.placeholder = currentLanguage() === 'en'
+        ? input.dataset.placeholderEn ?? ''
+        : input.dataset.placeholderZh ?? ''
+    }
+    if (input?.value.trim())
+      runSearch()
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-lang'] })
+
+  if (input)
+    input.placeholder = currentLanguage() === 'en' ? input.dataset.placeholderEn ?? '' : input.dataset.placeholderZh ?? ''
+
+  const params = new URLSearchParams(location.search)
+  const initial = params.get('q')
+  if (initial && input) {
+    input.value = initial
+    runSearch()
+  }
+</script>

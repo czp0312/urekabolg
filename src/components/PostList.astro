@@ -1,0 +1,56 @@
+---
+import type { BlogPost } from '../utils/posts'
+import { tagSlug } from '../utils/tags'
+
+interface Props {
+  posts: BlogPost[]
+  /** Hide the tag row when the list already lives on a tag page. */
+  showTags?: boolean
+}
+
+const { posts, showTags = true } = Astro.props
+---
+
+<ul class="space-y-1 list-none p-0">
+  {posts.map(post => (
+    <li>
+      <div class="relative -mx-4 px-4 py-3 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] transition-colors group">
+        {/* Stretched link keeps the whole card clickable without nesting the tag links. */}
+        <a
+          href={`/blog/${post.id}`}
+          class="absolute inset-0 rounded-lg focus-visible:outline focus-visible:outline-1 focus-visible:outline-[hsl(var(--foreground))/55]"
+        >
+          <span class="sr-only">
+            <span data-lang="zh">{post.data.title}</span>
+            <span data-lang="en">{post.data.titleEn ?? post.data.title}</span>
+          </span>
+        </a>
+        <div class="flex items-start justify-between gap-4">
+          <div class="min-w-0">
+            <h3 class="text-sm font-medium group-hover:underline underline-offset-4">
+              <span data-lang="zh">{post.data.title}</span>
+              <span data-lang="en">{post.data.titleEn ?? post.data.title}</span>
+            </h3>
+            <p class="mt-1 text-xs leading-relaxed text-[hsl(var(--muted-foreground))]">
+              <span data-lang="zh">{post.data.description}</span>
+              <span data-lang="en">{post.data.descriptionEn ?? post.data.description}</span>
+            </p>
+          </div>
+          <span class="shrink-0 font-mono text-xs text-[hsl(var(--muted-foreground))]">{post.data.date}</span>
+        </div>
+        {showTags && post.data.tags && post.data.tags.length > 0 && (
+          <div class="relative z-10 mt-2 flex w-fit flex-wrap gap-1.5">
+            {post.data.tags.map(tag => (
+              <a
+                href={`/tags/${tagSlug(tag)}`}
+                class="inline-flex items-center rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--muted))/45] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] transition-colors hover:border-[hsl(var(--foreground))/30] hover:text-[hsl(var(--foreground))]"
+              >
+                {tag}
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </li>
+  ))}
+</ul>

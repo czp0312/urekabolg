@@ -1,6 +1,8 @@
 ---
 import { getCollection, render } from 'astro:content'
+import Footer from '../../components/Footer.astro'
 import Header from '../../components/Header.astro'
+import TagPills from '../../components/TagPills.astro'
 import Layout from '../../layouts/Layout.astro'
 
 export async function getStaticPaths() {
@@ -16,7 +18,7 @@ if (!post)
   return new Response('Not found', { status: 404 })
 
 const { Content, headings } = await render(post)
-const sections = headings.filter(heading => heading.depth === 2)
+const sections = headings
 ---
 
 <Layout title={`${post.data.title} — Ureka Blog`} description={post.data.description} type="article" publishedTime={post.data.date}>
@@ -33,6 +35,9 @@ const sections = headings.filter(heading => heading.depth === 2)
     <p class="text-xs text-[hsl(var(--muted-foreground))] font-mono mb-6">
       {post.data.date}
     </p>
+    {post.data.tags && post.data.tags.length > 0 && (
+      <TagPills tags={post.data.tags} tagsEn={post.data.tagsEn} class="mb-6" />
+    )}
     {!post.data.bilingual && (
       <p data-lang="en" class="mb-6 rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--muted))/45] px-3 py-2 text-xs text-[hsl(var(--muted-foreground))]">
         This essay is currently available in Chinese.
@@ -47,7 +52,9 @@ const sections = headings.filter(heading => heading.depth === 2)
           </summary>
           <ul>
             {sections.map(section => (
-              <li><a href={`#${section.slug}`}>{section.text}</a></li>
+              <li data-depth={section.depth} style={`--toc-indent: ${(section.depth - 1) * 0.75}rem`}>
+                <a href={`#${section.slug}`}>{section.text}</a>
+              </li>
             ))}
           </ul>
         </details>
@@ -57,6 +64,7 @@ const sections = headings.filter(heading => heading.depth === 2)
       <Content />
     </article>
   </main>
+  <Footer />
 </Layout>
 
 <style>
@@ -73,7 +81,7 @@ const sections = headings.filter(heading => heading.depth === 2)
   }
   .article-toc ul {
     display: grid;
-    gap: 0.25rem 1.5rem;
+    gap: 0.25rem;
     margin: 0.75rem 0 0;
     padding: 0;
     list-style: none;
@@ -86,17 +94,28 @@ const sections = headings.filter(heading => heading.depth === 2)
     text-underline-offset: 0.2em;
     text-decoration-color: transparent;
   }
+  .article-toc li[data-depth='3'] {
+    font-size: 0.75rem;
+  }
+  .article-toc li[data-depth] {
+    padding-left: var(--toc-indent, 0);
+  }
+  .article-toc li[data-depth='1'] {
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+  .article-toc li[data-depth='4'],
+  .article-toc li[data-depth='5'],
+  .article-toc li[data-depth='6'] {
+    font-size: 0.6875rem;
+    color: hsl(var(--muted-foreground) / 0.85);
+  }
   .article-toc a:hover,
   .article-toc a:focus-visible {
     color: hsl(var(--foreground));
     text-decoration-color: currentColor;
   }
-  .blog-content :global(:is(h2, h3, h4, h5, h6)[id]) {
+  .blog-content :global(:is(h1, h2, h3, h4, h5, h6)[id]) {
     scroll-margin-top: 6rem;
-  }
-  @media (min-width: 640px) {
-    .article-toc ul {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
   }
 </style>

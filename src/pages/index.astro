@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content'
+import Footer from '../components/Footer.astro'
 import Header from '../components/Header.astro'
 import Layout from '../layouts/Layout.astro'
 
@@ -79,7 +80,7 @@ const projectBeams = [
   <section class="flex flex-col px-4 max-w-3xl mx-auto pt-24 md:pt-28 pb-8 overflow-x-clip">
     <div class="fade-up flex items-center gap-3 mb-4">
       <img
-        src="/avatar.svg"
+        src="/avatar.jpg"
         alt="Ureka"
         class="w-14 h-14 rounded-full object-cover ring-1 ring-[hsl(var(--border))]"
         width="56"
@@ -258,8 +259,8 @@ const projectBeams = [
                 const [beamFrom, beamTo] = projectBeams[i % projectBeams.length]
 
                 return (
-                  <a href={`/blog/${post.id}`} class="writing-entry block -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] hover:-translate-y-0.5 transition-all duration-300 group border-beam" style={`--beam-from: ${beamFrom}; --beam-to: ${beamTo};`}>
-                    <div class="flex h-full items-center justify-between gap-4 relative z-[1]">
+                  <a href={`/blog/${post.id}`} class="writing-entry flex items-center -mx-4 px-4 py-2.5 rounded-lg border border-transparent hover:bg-[hsl(var(--muted))] hover:border-[hsl(var(--border))] hover:-translate-y-0.5 transition-all duration-300 group border-beam" style={`--beam-from: ${beamFrom}; --beam-to: ${beamTo};`}>
+                    <div class="flex w-full items-center justify-between gap-4 relative z-[1]">
                       <div class="min-w-0">
                         <h3 class="flex min-w-0 items-center gap-2 text-sm font-medium group-hover:underline underline-offset-4">
                           <span class="truncate">
@@ -276,6 +277,16 @@ const projectBeams = [
                           <span data-lang="zh">{post.data.description}</span>
                           <span data-lang="en">{post.data.descriptionEn ?? post.data.description}</span>
                         </p>
+                        {post.data.tags && post.data.tags.length > 0 && (
+                          <div class="mt-2 flex flex-wrap gap-1">
+                            {post.data.tags.map((tag: string, tagIndex: number) => (
+                              <span class="inline-flex items-center rounded-md border border-[hsl(var(--border))] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))]">
+                                <span data-lang="zh">{tag}</span>
+                                <span data-lang="en">{post.data.tagsEn?.[tagIndex] ?? tag}</span>
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       <span class="text-xs text-[hsl(var(--muted-foreground))] group-hover:text-[hsl(var(--foreground))] transition-colors duration-300 font-mono shrink-0">{post.data.date}</span>
                     </div>
@@ -297,16 +308,7 @@ const projectBeams = [
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="max-w-3xl mx-auto px-4 pb-8 text-xs text-[hsl(var(--muted-foreground))/50] font-mono">
-    <div class="border-t border-[hsl(var(--border))] pt-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-      <span>© 2026 Ureka Blog</span>
-      <span>
-        <span data-lang="zh">用 Astro 与 Tailwind CSS 构建</span>
-        <span data-lang="en">Built with Astro and Tailwind CSS</span>
-      </span>
-    </div>
-  </footer>
+  <Footer />
 </Layout>
 
 <style>
@@ -350,7 +352,7 @@ const projectBeams = [
   }
 
   .writing-window {
-    height: 15rem;
+    height: 17rem;
     margin-inline: -1rem;
     padding-inline: 1rem;
     padding-block: 0.25rem;
@@ -372,7 +374,7 @@ const projectBeams = [
   }
 
   .writing-entry {
-    height: calc((15rem - 0.5rem) / 3);
+    height: calc((17rem - 0.5rem) / 3);
   }
 
   .writing-entry:focus-visible {

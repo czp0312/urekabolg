@@ -1,0 +1,53 @@
+---
+import Footer from '../../components/Footer.astro'
+import Header from '../../components/Header.astro'
+import Layout from '../../layouts/Layout.astro'
+import { getPublishedPosts } from '../../utils/posts'
+import { collectTags } from '../../utils/tags'
+
+const posts = await getPublishedPosts()
+const tags = collectTags(posts)
+---
+
+<Layout title="标签 — Ureka Blog" description="按标签浏览 Ureka Blog 的全部文章。">
+  <Header />
+  <main class="max-w-3xl mx-auto px-4 pt-20 pb-12">
+    <a href="/#posts" class="inline-flex items-center text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors mb-8">
+      <span data-lang="zh">← 返回写作</span>
+      <span data-lang="en">← Back to writing</span>
+    </a>
+
+    <h1 class="text-lg font-medium mb-2">
+      <span data-lang="zh">标签</span>
+      <span data-lang="en">Tags</span>
+    </h1>
+    <p class="mb-8 font-mono text-xs text-[hsl(var(--muted-foreground))]">
+      <span data-lang="zh">共 {tags.length} 个标签，{posts.length} 篇文章</span>
+      <span data-lang="en">{tags.length} tags across {posts.length} posts</span>
+    </p>
+
+    {tags.length > 0
+      ? (
+          <ul class="flex flex-wrap gap-2">
+            {tags.map(tag => (
+              <li>
+                <a
+                  href={`/tags/${tag.slug}`}
+                  class="inline-flex items-baseline gap-1.5 rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--muted))/45] px-2.5 py-1 font-mono text-xs text-[hsl(var(--muted-foreground))] transition-colors hover:border-[hsl(var(--foreground))/30] hover:text-[hsl(var(--foreground))]"
+                >
+                  <span>{tag.tag}</span>
+                  <span class="text-[0.625rem] text-[hsl(var(--muted-foreground))/60]">{tag.count}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      : (
+          <p class="font-mono text-xs text-[hsl(var(--muted-foreground))]">
+            <span data-lang="zh">还没有任何标签。</span>
+            <span data-lang="en">No tags yet.</span>
+          </p>
+        )}
+  </main>
+  <Footer />
+</Layout>

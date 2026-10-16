@@ -1,0 +1,37 @@
+---
+const links = [
+  {
+    href: '/tags',
+    labelZh: '标签',
+    labelEn: 'Tags',
+    icon: 'tag',
+  },
+]
+---
+
+<footer class="max-w-3xl mx-auto px-4 pb-8 text-xs font-mono">
+  <div class="flex flex-wrap items-center gap-x-5 gap-y-2 pb-4 text-[hsl(var(--muted-foreground))]">
+    {links.map(link => (
+      <a
+        href={link.href}
+        class="inline-flex items-center gap-1.5 hover:text-[hsl(var(--foreground))] transition-colors"
+      >
+        {link.icon === 'tag' && (
+          <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" />
+            <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
+          </svg>
+        )}
+        <span data-lang="zh">{link.labelZh}</span>
+        <span data-lang="en">{link.labelEn}</span>
+      </a>
+    ))}
+  </div>
+  <div class="border-t border-[hsl(var(--border))] pt-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between text-[hsl(var(--muted-foreground))/50]">
+    <span>© 2026 Ureka Blog</span>
+    <span>
+      <span data-lang="zh">用 Astro 与 Tailwind CSS 构建</span>
+      <span data-lang="en">Built with Astro and Tailwind CSS</span>
+    </span>
+  </div>
+</footer>

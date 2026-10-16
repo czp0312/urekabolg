@@ -50,6 +50,7 @@ const blog = defineCollection({
       bilingual: z.boolean().optional(),
       draft: z.boolean().optional(),
       tags: z.array(z.string()).optional(),
+      tagsEn: z.array(z.string()).optional(),
     })
     .superRefine(requireReadyDescription),
 })

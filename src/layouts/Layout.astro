@@ -16,7 +16,7 @@ const title = Astro.props.title ?? siteName
 const description = Astro.props.description ?? defaultDescription
 const type = Astro.props.type ?? 'website'
 const canonicalUrl = new URL(Astro.url.pathname, site).toString()
-const imageUrl = new URL(Astro.props.image ?? '/avatar.svg', site).toString()
+const imageUrl = new URL(Astro.props.image ?? '/avatar.jpg', site).toString()
 ---
 
 <!doctype html>

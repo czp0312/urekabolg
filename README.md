@@ -10,6 +10,7 @@
 - Tailwind CSS v4（`@tailwindcss/vite` + `@tailwindcss/typography`）
 - Astro Content Collections（`blog` / `projects`）
 - 客户端双语切换（中文 / 英文），单 URL，不生成多语言路由
+- 标签页 `/tags` 与标签筛选页 `/tags/<tag>`，搜索页 `/search`（构建期生成索引，客户端全文检索）
 - 部署目标：Cloudflare Workers Assets（见 `wrangler.jsonc`）
 
 ## 快速开始
@@ -52,10 +53,18 @@ npm run astro -- dev stop
 ```text
 src/
   components/Header.astro      顶部导航（语言 / 主题切换）
+  components/Footer.astro      页脚：标签入口与版权
+  components/PostList.astro    文章列表（标签页与搜索结果复用）
+  components/TagPills.astro    标签胶囊（文章页与项目页复用）
   layouts/Layout.astro         全站页面壳、SEO 与 Open Graph 元数据
   pages/index.astro            首页：个人介绍、项目、写作
   pages/blog/[slug].astro      文章详情页
   pages/projects/[slug].astro  项目详情页
+  pages/tags/index.astro       标签总览
+  pages/tags/[tag].astro       单标签文章列表
+  pages/search.astro           全文搜索
+  utils/posts.ts               文章读取与排序
+  utils/tags.ts                标签收集与 slug 生成
   styles/global.css            Tailwind v4 入口、设计变量与组件样式
   content.config.ts            blog / projects 内容集合 schema
   content/blog/                文章（Markdown / MDX）
@@ -70,7 +79,7 @@ public/
 1. `astro.config.ts` 里的 `site` 已设为 `https://ureka.top`；换域名时改这里，canonical URL 与 sitemap 会跟着变。
 2. 首页的个人信息集中在 `src/pages/index.astro` 顶部的 `profile`、`aboutZh`、`aboutEn` 变量。
 3. `src/layouts/Layout.astro` 里的 `siteName` 与 `defaultDescription` 决定默认标题和描述。
-4. 替换 `public/avatar.svg` 与 `public/icons/favicon.svg`。
+4. 替换 `public/avatar.jpg`（512x512 方图，用作首屏头像与 Open Graph 图片）与 `public/icons/favicon.svg`。
 
 ## 内容
 

@@ -25,16 +25,24 @@ Ureka Blog 是一个基于 Astro 的静态个人博客，视觉与信息架构�
 - `src/content/projects/`：项目 Markdown/MDX，slug 即文件名，对应路由 `/projects/<slug>`。
 - `src/content/README.md`：面向写作者的发布流程与 frontmatter 字段说明。修改内容 schema 时必须同步更新。
 - `src/pages/index.astro`：首页（Hero、About、Projects、Writing 标签页）。个人介绍文案集中在文件顶部的 `profile`、`aboutZh`、`aboutEn` 变量。
-- `src/pages/blog/[slug].astro`：文章详情页，使用 `render()` 拿 `headings` 生成二级标题快捷跳转，正文走 `prose` 排版。
+- `src/pages/blog/[slug].astro`：文章详情页，使用 `render()` 拿 `headings` 生成快捷跳转目录（收集全部 1-6 级标题，按层级缩进，标题数 >= 3 时渲染），渲染 frontmatter 的 `tags` / `tagsEn` 标签胶囊，正文走 `prose` 排版。
 - `src/pages/projects/[slug].astro`：项目详情页，正文走 `.project-content` 样式。
 - `src/pages/404.astro`：Tailwind 重写的 404 页面。
 - `src/pages/robots.txt.ts`：生成 robots.txt 并指向 sitemap。
+- `src/pages/tags/index.astro`：标签总览页（`/tags`），列出全部标签与文章数量。
+- `src/pages/tags/[tag].astro`：单标签文章列表页（`/tags/<tag>`），按标签筛选文章。
+- `src/pages/search.astro`：搜索页（`/search`），构建期把标题、摘要、标签和正文纯文本写入 `application/json` 索引，客户端按语言检索；正文用正则剥离 Markdown 语法。
+- `src/components/Footer.astro`：全站页脚，包含标签入口与版权信息。
+- `src/components/PostList.astro`：文章列表组件，用「拉伸链接 + `sr-only` 标题」保证整卡可点，同时让标签链接保持独立可点。
+- `src/components/TagPills.astro`：标签胶囊组件，`links` 为 `true` 时链到 `/tags/<tag>`。
+- `src/utils/posts.ts`：`getPublishedPosts()`，统一草稿过滤与按日期倒序排序。
+- `src/utils/tags.ts`：`tagSlug()` / `collectTags()` / `postsWithTag()`，标签 slug 与聚合逻辑。
 - `src/layouts/Layout.astro`：全站页面壳，包含 `siteName`、`defaultDescription`、canonical、Open Graph、Twitter Card、favicon、网格背景 SVG，并引入 `site-init.js` 与 `fade-observer.js`。
-- `src/components/Header.astro`：固定顶部导航（`/#about`、`/#projects`、`/#posts`）、语言切换和主题切换。语言/主题切换逻辑写在该文件的 `<script>` 中。
+- `src/components/Header.astro`：固定顶部导航（`/search`、`/#about`、`/#projects`、`/#posts`）、语言切换和主题切换。语言/主题切换逻辑写在该文件的 `<script>` 中。
 - `src/styles/global.css`：Tailwind v4 入口、`@theme` 变量、`@keyframes`、`:root` / `.dark` 设计变量、`html[data-lang]` 显隐规则，以及 `.fade-up`、`.border-beam`、`.color-slide`、`.decorate-bar`、`.blog-content`、`.project-content`、`.prose` 等组件层样式。
 - `public/scripts/site-init.js`：首屏内联执行的脚本，负责在渲染前写入 `data-lang` 和 `dark` 类，避免闪烁。
 - `public/scripts/fade-observer.js`：用 IntersectionObserver 给 `.fade-up` 元素加 `.fade-visible`。
-- `public/avatar.svg`、`public/icons/favicon.svg`：站点头像与图标，可替换。
+- `public/avatar.jpg`（512x512 方图，首页头像与默认 Open Graph 图片）、`public/icons/favicon.svg`：站点图像资源，可替换。`public/avatar.svg` 是主题自带占位图，已不再被引用。
 - `scripts/new-post.ts`：新建文章（写入 `src/content/blog/` 并创建同名图片目录）。
 - `scripts/format-posts.ts`：用 `autocorrect-node` 整理 `src/content/**/*.{md,mdx}` 的中文标点与空格。
 - `wrangler.jsonc`：Cloudflare Workers Assets 配置，`name` 为 `urekablog`，`assets.directory` 为 `./dist`。
@@ -114,7 +122,8 @@ Ureka Blog 是一个基于 Astro 的静态个人博客，视觉与信息架构�
 - 静态公共资源：`public/`，会按原路径发布；`public/scripts/` 是运行时脚本，不参与打包，ESLint 也忽略该目录。
 - 环境变量：`.env` 和 `.env.production` 被 `.gitignore` 忽略；当前没有自定义 env schema 或 `PUBLIC_*` 约定。新增环境变量前必须确认 Astro 暴露规则和部署平台配置。
 - 不要提交密钥、Token、Cookie、证书或真实用户隐私数据。
-- 站点没有 RSS/Atom、标签页、评论系统和访问量统计；这些能力在主题移植时被有意移除，需要时再单独引入。
+- 站点有标签页（`/tags`、`/tags/<tag>`）和搜索页（`/search`），但没有 RSS/Atom、评论系统和访问量统计；这些能力在主题移植时被有意移除，需要时再单独引入。
+- 搜索是纯客户端的：索引在构建期由 `src/pages/search.astro` 内联进 HTML，没有第三方服务，也没有额外的构建步骤或依赖。
 
 ## 修改后的验证流程
 

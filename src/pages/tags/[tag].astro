@@ -1,0 +1,41 @@
+---
+import Footer from '../../components/Footer.astro'
+import Header from '../../components/Header.astro'
+import PostList from '../../components/PostList.astro'
+import Layout from '../../layouts/Layout.astro'
+import { getPublishedPosts } from '../../utils/posts'
+import { collectTags, postsWithTag } from '../../utils/tags'
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts()
+
+  return collectTags(posts).map(tag => ({
+    params: { tag: tag.slug },
+    props: { tag: tag.tag, count: tag.count },
+  }))
+}
+
+const { tag, count } = Astro.props
+const posts = postsWithTag(await getPublishedPosts(), Astro.params.tag ?? '')
+---
+
+<Layout title={`${tag} — 标签 — Ureka Blog`} description={`Ureka Blog 中带有「${tag}」标签的文章，共 ${count} 篇。`}>
+  <Header />
+  <main class="max-w-3xl mx-auto px-4 pt-20 pb-12">
+    <a href="/tags" class="inline-flex items-center text-xs font-mono text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] transition-colors mb-8">
+      <span data-lang="zh">← 全部标签</span>
+      <span data-lang="en">← All tags</span>
+    </a>
+
+    <h1 class="text-lg font-medium mb-2">
+      <span class="font-mono text-[hsl(var(--muted-foreground))]">#</span>{tag}
+    </h1>
+    <p class="mb-8 font-mono text-xs text-[hsl(var(--muted-foreground))]">
+      <span data-lang="zh">{count} 篇文章</span>
+      <span data-lang="en">{count} posts</span>
+    </p>
+
+    <PostList posts={posts} />
+  </main>
+  <Footer />
+</Layout>

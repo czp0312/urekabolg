@@ -1,0 +1,38 @@
+---
+import { tagSlug } from '../utils/tags'
+
+interface Props {
+  tags: string[]
+  /** English labels, index-aligned with `tags`. */
+  tagsEn?: string[]
+  /** Render as plain badges instead of links (used on detail pages). */
+  links?: boolean
+  class?: string
+}
+
+const { tags, tagsEn, links = true, class: className = '' } = Astro.props
+---
+
+{tags.length > 0 && (
+  <div class:list={['flex flex-wrap gap-1.5', className]}>
+    {tags.map((tag, index) => {
+      const classes = 'inline-flex items-center rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--muted))/45] px-2 py-0.5 text-xs font-mono text-[hsl(var(--muted-foreground))] transition-colors'
+      const label = (
+        <>
+          <span data-lang="zh">{tag}</span>
+          <span data-lang="en">{tagsEn?.[index] ?? tag}</span>
+        </>
+      )
+
+      return links
+        ? (
+            <a href={`/tags/${tagSlug(tag)}`} class={`${classes} hover:border-[hsl(var(--foreground))/30] hover:text-[hsl(var(--foreground))]`}>
+              {label}
+            </a>
+          )
+        : (
+            <span class={classes}>{label}</span>
+          )
+    })}
+  </div>
+)}
