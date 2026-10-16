@@ -2,10 +2,14 @@ import { glob } from 'astro/loaders'
 import { z } from 'astro/zod'
 import { defineCollection } from 'astro:content'
 
-const dateString = z
-  .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD format')
-  .refine(value => !Number.isNaN(new Date(`${value}T00:00:00Z`).getTime()), 'Use a valid date')
+const dateString = z.preprocess(
+  // YAML parses an unquoted `2026-09-19` as a Date, so normalise it back to a string.
+  value => (value instanceof Date ? value.toISOString().slice(0, 10) : value),
+  z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD format')
+    .refine(value => !Number.isNaN(new Date(`${value}T00:00:00Z`).getTime()), 'Use a valid date'),
+)
 
 function requireReadyDescription(
   value: { description: string, draft?: boolean },

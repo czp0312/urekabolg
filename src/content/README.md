@@ -116,7 +116,7 @@ tagsEn:
 | `titleEn` | 否 | 英文标题，缺省时回退到 `title` |
 | `description` | 是 | 首页摘要，不能以 `TODO` 开头（除非是草稿） |
 | `descriptionEn` | 否 | 英文摘要，缺省时回退到 `description` |
-| `date` | 是 | `YYYY-MM-DD` 字符串 |
+| `date` | 是 | `YYYY-MM-DD` 字符串，建议写成 `date: "2026-09-19"`（不加引号也能通过校验，见下方常见构建报错） |
 | `category` | 否 | `technical`（默认）或 `notes`，决定首页落在哪个标签页 |
 | `bilingual` | 否 | 正文本身就是中英双语时设为 `true`，英文模式不再提示“仅有中文” |
 | `draft` | 否 | `true` 时只在开发模式显示 |
@@ -124,6 +124,10 @@ tagsEn:
 | `tagsEn` | 否 | 英文模式使用的标签，顺序与 `tags` 保持一致 |
 
 `archive` 是保留的控制标签。给文章加上它，文章就不会出现在首页写作列表、标签页和搜索里，只能在页脚的「归档」页（`/archive`）打开；它本身也不会显示成标签胶囊。适合放早期随笔、试验稿这类不想放在主列表里的内容。
+
+## 常见构建报错
+
+`InvalidContentEntryDataError` 里的 `date: Expected type "string", received "object"`，是因为 frontmatter 的日期没加引号。YAML 会把 `date: 2026-09-19` 当成日期对象，改成 `date: "2026-09-19"` 即可；内容集合的 schema 现在也会自动把这种日期对象转成字符串，所以忘了加引号不会再把构建弄挂。日志里出现 `[InvalidContentEntryDataError] blog → <文件名> data does not match collection schema` 时，先看文件名指向的 frontmatter 字段是不是漏写或写错了。
 
 ## 什么时候才需要改前端
 

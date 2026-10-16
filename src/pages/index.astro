@@ -20,6 +20,7 @@ const profile = {
   links: [
     { label: 'GitHub', href: 'https://github.com/czp0312', icon: 'github' },
     { label: 'Email', href: 'mailto:ureka@linux.do', icon: 'email' },
+    { label: '服务器', href: 'https://monitor.ureka.top/#/', icon: 'server' },
   ],
 }
 
@@ -125,6 +126,13 @@ const projectBeams = [
                 <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <rect width="20" height="16" x="2" y="4" rx="2" />
                   <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                </svg>
+              )}
+              {link.icon === 'server' && (
+                <svg class="h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect width="20" height="8" x="2" y="3" rx="2" />
+                  <rect width="20" height="8" x="2" y="13" rx="2" />
+                  <path d="M6 7h.01M6 17h.01" />
                 </svg>
               )}
               {link.label}
