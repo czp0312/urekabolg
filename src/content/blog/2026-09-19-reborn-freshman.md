@@ -1,12 +1,13 @@
 ---
-title: "重生回到大一"
-titleEn: "Reborn as a Freshman"
-description: "如今如此焦虑的我，重生回到大一会做什么"
-descriptionEn: "What would an anxious version of me do if I could start university over again?"
-date: "2026-09-19"
-category: "notes"
+title: 重生回到大一
+titleEn: Reborn as a Freshman
+description: 如今如此焦虑的我，重生回到大一会做什么
+descriptionEn: What would an anxious version of me do if I could start university over again?
+date: 2026-09-19
+category: notes
 tags:
   - 随想
+  - archive
 ---
 ### 从前、现在
 我的大学生活是失败的。
